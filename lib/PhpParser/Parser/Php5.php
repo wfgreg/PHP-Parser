@@ -1189,7 +1189,16 @@ class Php5 extends \PhpParser\ParserAbstract
                  $this->semValue = new Name(substr($this->semStack[$stackPos-(1-1)], 1), $this->startAttributeStack[$stackPos-(1-1)] + $this->endAttributes);
             },
             90 => function ($stackPos) {
-                 $this->semValue = new Expr\Variable(substr($this->semStack[$stackPos-(1-1)], 1), $this->startAttributeStack[$stackPos-(1-1)] + $this->endAttributes);
+              $varname = substr($this->semStack[$stackPos-(1-1)], 1);
+              if($varname == "GLOBALS" || $varname == "_SERVER" || $varname == "_FILES" || $varname == "_SESSION" || $varname == "_ENV") {
+                  $this->semValue = new Expr\VariableSuperGlobal(substr($this->semStack[$stackPos-(1-1)], 1), $this->startAttributeStack[$stackPos-(1-1)] + $this->endAttributes);
+              }
+              else if($varname == "_GET" || $varname == "_POST" || $varname == "_REQUEST" || $varname == "_COOKIE") {
+                  $this->semValue = new Expr\VariableSuperGlobalUser(substr($this->semStack[$stackPos-(1-1)], 1), $this->startAttributeStack[$stackPos-(1-1)] + $this->endAttributes);
+              }
+              else {
+                  $this->semValue = new Expr\Variable(substr($this->semStack[$stackPos-(1-1)], 1), $this->startAttributeStack[$stackPos-(1-1)] + $this->endAttributes);
+              }
             },
             91 => function ($stackPos) {
                  $this->semValue = $this->semStack[$stackPos-(1-1)];
